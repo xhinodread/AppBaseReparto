@@ -1,9 +1,13 @@
 package com.example.appbase.ui.fragment.screen
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -33,8 +37,13 @@ import com.example.appbase.ui.common.myAppTextFieldColors
 import com.example.appbase.ui.theme.Cremita
 import com.example.appbase.ui.viewmodel.LoginViewModel
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.appbase.ui.clickLogin
 import com.example.appbase.ui.common.ConeccionStado
 import com.example.appbase.ui.common.ConnectivityStatus
 import com.example.appbase.ui.viewmodel.ConeccionViewModel
@@ -48,8 +57,11 @@ fun LoginScreen(
 
     var emailUser by remember { mutableStateOf("") }
     var passwUser by remember { mutableStateOf("") }
+    var estadoBoton by remember { mutableStateOf(true) }
 
     val coneccionStatus by coneccionViewModel.isConected.observeAsState()
+
+    val context = LocalContext.current
 
 
     LaunchedEffect(key1 = Unit) {
@@ -102,13 +114,16 @@ fun LoginScreen(
                         ImputStd(passwUser, {passwUser = it}, "Password"  )
                         Spacer(modifier = Modifier.height(20.dp))
                         Button(
+                            enabled=estadoBoton,
                             onClick = {
+                                estadoBoton=false
                                 coneccionViewModel.statusConeccion()
                                 Log.d("onCreate", "coneccionStatus: $coneccionStatus")
                                 if( coneccionStatus == true ){
                                     loginViewModel.userUiState(emailUser, passwUser)
                                     clickLogin(onClickAction, emailUser, passwUser)
                                 }
+                                estadoBoton=true
                             },
                             colors = ButtonDefaults.buttonColors(backgroundColor= colorResource(id = R.color.colorPrimaryDarkPi)),
                             modifier = Modifier
@@ -119,14 +134,47 @@ fun LoginScreen(
                         ) {
                             Text(text="Login", color= Color.White)
                         }
+                        Spacer(modifier = Modifier.height(20.dp))
+                        Row( modifier = Modifier
+                            .background(Color.Transparent)
+                            .fillMaxWidth()
+                            .padding(5.dp),
+                            horizontalArrangement = Arrangement.End
+                        ) {
+                            Text(text="Olvide mi contraseña",
+                                color= Color.Black,
+                                fontFamily = FontFamily.SansSerif,
+                                fontStyle = FontStyle(1) ,
+                                modifier = Modifier
+                                    .padding(5.dp)
+                                    .clickable {
+                                        Toast
+                                            .makeText(
+                                                context,
+                                                "Recordar contraseña",
+                                                Toast.LENGTH_SHORT
+                                            )
+                                            .show()
+                                    }
+                            )
+                        }
+                        // Spacer(modifier = Modifier.height(20.dp))
+
                         ConeccionStado(coneccionStatus == true)
                         ConnectivityStatus()
                         Spacer(modifier = Modifier.height(25.dp))
-                        Image(
-                            painter = painterResource(id = R.drawable.capturahomepiero),
-                            contentDescription = stringResource(id = R.string.app_title),
-                            alignment = Alignment.Center
-                        )
+                        Row(
+                            horizontalArrangement = Arrangement.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.capturahomepiero),
+                                contentDescription = stringResource(id = R.string.app_title),
+                                alignment = Alignment.Center,
+                                modifier = Modifier.fillMaxWidth().size(300.dp)
+                            )
+                        }
+
                     }
                 }
 

@@ -63,8 +63,6 @@ fun HomeScreen(
     }
     *****/
 
-
-
     Card(
         elevation = 6.dp,
         modifier = Modifier

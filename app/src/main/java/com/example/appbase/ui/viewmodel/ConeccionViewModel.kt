@@ -1,6 +1,7 @@
 package com.example.appbase.ui.viewmodel
 
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -24,7 +25,8 @@ class ConeccionViewModel @Inject constructor(
 
     fun statusConeccion(){
         viewModelScope.launch {
-            isConected.postValue(false)
+            Log.d("onClick", "statusConeccion")
+            // isConected.postValue(false)
             val result = getEstadoApiUseCase()
             isConected.postValue(result)
         }

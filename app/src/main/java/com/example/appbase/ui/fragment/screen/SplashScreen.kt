@@ -1,5 +1,7 @@
 package com.example.appbase.ui.fragment.screen
 
+import android.graphics.Color.alpha
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -25,8 +27,8 @@ import kotlinx.coroutines.delay
 @Composable
 fun SplashScreen(navController: NavController){
     var startAnimator by remember { mutableStateOf(false) }
-    val tiempoEspera:Long = 500
-    val tiempoTransicion:Int = 3500
+    val tiempoEspera:Long = 1500
+    val tiempoTransicion:Int = 3000
 
     val alphaAnim = animateFloatAsState(
         targetValue = if(startAnimator) 0f else 1f,
@@ -54,12 +56,14 @@ fun Splash(alpha: Float){
     ){
         Text(
             "Bienveni@s",
+            Modifier.alpha(alpha=alpha),
             fontSize = 30.sp,
             fontWeight = FontWeight.Bold
         )
         Image(
             painter = painterResource(id = R.drawable.capturahomepiero),
-            contentDescription = stringResource(id = R.string.app_title)
+            contentDescription = stringResource(id = R.string.app_title),
+            Modifier.size(150.dp, 150.dp).alpha(alpha=alpha)
         )
         /**
          *  Image(

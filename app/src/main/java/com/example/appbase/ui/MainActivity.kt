@@ -19,7 +19,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.appbase.R
 import com.example.appbase.ui.fragment.screen.LoginScreen
+import com.example.appbase.ui.fragment.screen.clickLogin
 import com.example.appbase.ui.nav.BottomNavigationBar
+import com.example.appbase.ui.nav.DrawerMenu
 import com.example.appbase.ui.nav.Navigation
 import com.example.appbase.ui.nav.TopBar
 import com.example.appbase.ui.theme.AppBaseTheme
@@ -47,6 +49,10 @@ fun MainScreen(
 ) {
     var statusPantalla by remember { mutableStateOf(true) }
     val navController = rememberNavController()
+    val estadoDrawer = rememberScaffoldState(
+        drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    )
+    val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
 
      if(statusPantalla){
@@ -63,14 +69,21 @@ fun MainScreen(
          }
      }else{
          Scaffold(
-             topBar = { TopBar() },
+             topBar = { TopBar(estadoDrawer) },
              bottomBar = { BottomNavigationBar(navController) },
              content = { padding ->
                  Box(modifier = Modifier.padding(padding)) {
                      Navigation(navController = navController, loginViewModel)
                  }
              },
-             backgroundColor = Cremita // Set background color to avoid the white flashing when you switch between screens
+             backgroundColor = Cremita, // Set background color to avoid the white flashing when you switch between screens
+             scaffoldState = estadoDrawer,
+             drawerContent = {
+                 Column() {
+                     Text(text = "Menú Cliente")
+                     DrawerMenu(navController , coroutineScope  , estadoDrawer  )
+                 }
+             }
          )
      }
 }
@@ -87,12 +100,13 @@ fun MainScreenPreview() {
     MainScreen()
 }
 
+/****
 @Preview(showBackground = true)
 @Composable
 fun TopBarPreview() {
-    TopBar()
+    TopBar(estadoDrawer)
 }
-
+****/
 @Preview(showBackground = true)
 @Composable
 fun BottomNavigationBarPreview() {

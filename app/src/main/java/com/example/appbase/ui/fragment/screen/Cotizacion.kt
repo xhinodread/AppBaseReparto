@@ -1,6 +1,8 @@
 package com.example.appbase.ui.fragment.screen
 
+import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
@@ -14,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
@@ -21,10 +24,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.appbase.R
 import com.example.appbase.ui.common.bordeBoton
 import com.example.appbase.ui.common.myAppTextFieldColors
 import com.example.appbase.ui.viewmodel.SeguimientoViewModel
+import com.example.appbase.ui.viewmodel.WhatAppViewModel
 
 @Composable
 fun Cotizacion(){
@@ -73,11 +78,13 @@ fun Cotizacion(){
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun FrmCotizacion(){
+fun FrmCotizacion(whatAppViewModel: WhatAppViewModel = hiltViewModel()){
+
     var textoMensaje by remember {mutableStateOf("") }
     val formState = remember { mutableStateMapOf<String, String>() }
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
+    val context = LocalContext.current
 
     val formFields = listOf(
         FormField(label="textoOrigen",value="", titulo = "Origen", type = FormType.TEXT),
@@ -123,15 +130,13 @@ fun FrmCotizacion(){
                 .fillMaxHeight(.5f),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
             keyboardActions = KeyboardActions(
-                onDone = {keyboardController?.hide()},
-                onNext = {
-                    focusManager.moveFocus(FocusDirection.Down)
-                }
+                onDone = { keyboardController?.hide() },
+                onNext = { focusManager.moveFocus(FocusDirection.Down) }
             )
         )
         Spacer(modifier = Modifier.height(35.dp))
         Button(
-            onClick = { hacerClick(formState, textoMensaje) },
+            onClick = { hacerClick(formState, textoMensaje,whatAppViewModel, context) },
             colors = ButtonDefaults.buttonColors(backgroundColor= colorResource(id = R.color.purple_pi)),
             modifier = Modifier
                 .padding(5.dp)
@@ -144,11 +149,20 @@ fun FrmCotizacion(){
     }
 }
 
-private fun hacerClick(formState: SnapshotStateMap<String, String>, textoMensaje: String) {
+private fun hacerClick(
+    formState: SnapshotStateMap<String, String>,
+    textoMensaje: String,
+    whatAppViewModel: WhatAppViewModel,
+    unContext: Context
+    ) {
   //  formState.toMap()
     Log.e("onList", "Data Form: " )
     Log.e("onList", formState.toMap().toString() )
     Log.e("onList", textoMensaje )
+
+    whatAppViewModel.apply {
+     if(true) enviarPedidoWhatApp(unContext)
+    }
 }
 
 

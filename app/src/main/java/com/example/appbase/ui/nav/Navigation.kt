@@ -39,6 +39,11 @@ fun Navigation(navController: NavHostController, loginViewModel: LoginViewModel)
         composable(NavigationItem.Cotizar.route) {
             Cotizacion()
         }
+        composable(NavigationItem.MyCuentaScreen.route) {
+            MyCuenta()
+        }
+
+
         /***
         composable(NavigationItem.Movies.route) {
             MoviesScreen()
