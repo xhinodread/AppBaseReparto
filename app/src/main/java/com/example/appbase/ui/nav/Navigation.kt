@@ -42,6 +42,9 @@ fun Navigation(navController: NavHostController, loginViewModel: LoginViewModel)
         composable(NavigationItem.MyCuentaScreen.route) {
             MyCuenta()
         }
+        composable(NavigationItem.AppAboutScreen.route) {
+            AppAbout()
+        }
 
 
         /***

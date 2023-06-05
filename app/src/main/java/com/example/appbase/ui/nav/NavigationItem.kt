@@ -14,5 +14,8 @@ sealed class NavigationItem(var route: String, var icon: Int, var title: String)
     object SplashScreen : NavigationItem("SplashScreen", R.drawable.ic_profile, "SplashScreen")
     object LoginScreen : NavigationItem("LoginScreen", R.drawable.ic_profile, "LoginScreen")
     object MyCuentaScreen : NavigationItem("MyCuenta", R.drawable.ic_profile, "MyCuenta")
+    object AppAboutScreen : NavigationItem("AppAbout", R.drawable.ic_profile, "AppAbout")
+
+
 }
 

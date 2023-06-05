@@ -22,21 +22,37 @@ fun DrawerMenu(
     coroutineScope: CoroutineScope,
     estadoDrawer : ScaffoldState
 ){
+    Box(){
+        Column() {
+            Row(
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp)
+                    .clickable {
+                        navController.navigate(NavigationItem.MyCuentaScreen.route)
+                        coroutineScope.launch { estadoDrawer.drawerState.close() }
+                    }) {
+                Image(imageVector = Icons.Filled.Info, contentDescription = null)
+                Spacer(modifier = Modifier.width(15.dp))
+                Text(text = "My Cuenta", fontSize = 30.sp)
+            }
 
-    Column() {
-        Row(
-            horizontalArrangement = Arrangement.Start,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp)
-                .clickable {
-                    navController.navigate(NavigationItem.MyCuentaScreen.route)
-                    coroutineScope.launch { estadoDrawer.drawerState.close() }
-                }) {
-            Image(imageVector = Icons.Filled.Info, contentDescription = null)
-            Spacer(modifier = Modifier.width(15.dp))
-            Text(text = "My Cuenta", fontSize = 30.sp)
+            Row(
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp)
+                    .clickable {
+                        navController.navigate(NavigationItem.AppAboutScreen.route)
+                        coroutineScope.launch { estadoDrawer.drawerState.close() }
+                    }) {
+                Image(imageVector = Icons.Filled.Info, contentDescription = null)
+                Spacer(modifier = Modifier.width(15.dp))
+                Text(text = "About App", fontSize = 30.sp)
+            }
         }
     }
 }
