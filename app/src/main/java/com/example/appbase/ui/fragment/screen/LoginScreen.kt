@@ -43,6 +43,8 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.appbase.core.ConnectionState
+import com.example.appbase.core.connectivityState
 import com.example.appbase.ui.clickLogin
 import com.example.appbase.ui.common.ConeccionStado
 import com.example.appbase.ui.common.ConnectivityStatus
@@ -51,18 +53,20 @@ import com.example.appbase.ui.viewmodel.ConeccionViewModel
 @Composable
 fun LoginScreen(
     onClickAction: (String)->Unit,
-    loginViewModel: LoginViewModel,
+    loginViewModel: LoginViewModel = hiltViewModel(),
     coneccionViewModel: ConeccionViewModel = hiltViewModel()
 ){
 
-    var emailUser by remember { mutableStateOf("") }
-    var passwUser by remember { mutableStateOf("") }
+    var emailUser by remember { mutableStateOf("chileregion@gmail.com") }
+    var passwUser by remember { mutableStateOf("abcde123") }
     var estadoBoton by remember { mutableStateOf(true) }
 
     val coneccionStatus by coneccionViewModel.isConected.observeAsState()
 
     val context = LocalContext.current
 
+    val connection by connectivityState()
+    val isConnected = connection === ConnectionState.Available
 
     LaunchedEffect(key1 = Unit) {
         coneccionViewModel.statusConeccion()
@@ -118,14 +122,19 @@ fun LoginScreen(
                             onClick = {
                                 estadoBoton=false
                                 coneccionViewModel.statusConeccion()
-                                Log.d("onCreate", "coneccionStatus: $coneccionStatus")
                                 if( coneccionStatus == true ){
-                                    loginViewModel.userUiState(emailUser, passwUser)
-                                    clickLogin(onClickAction, emailUser, passwUser)
+                                    Log.d("onClick", "B "+estadoBoton.toString())
+                                    if( emailUser.isNullOrEmpty() || passwUser.isNullOrEmpty() ){
+                                        Toast.makeText(context, "Campo vacio", Toast.LENGTH_SHORT).show()
+                                    }else{
+                                        loginViewModel.userUiState(emailUser, passwUser)
+                                        clickLogin(onClickAction, emailUser, passwUser)
+                                    }
                                 }
                                 estadoBoton=true
                             },
-                            colors = ButtonDefaults.buttonColors(backgroundColor= colorResource(id = R.color.colorPrimaryDarkPi)),
+                         //   colors = ButtonDefaults.buttonColors(backgroundColor= colorResource(id = R.color.colorPrimaryDarkPi)),
+                            colors = ButtonDefaults.buttonColors(backgroundColor= colorResource(id = colorBotonLogin(estadoBoton))),
                             modifier = Modifier
                                 .padding(5.dp)
                                 .fillMaxWidth()
@@ -204,6 +213,10 @@ fun LoginScreen(
 
 fun clickLogin(onClickAction: (String) -> Unit, emailUser: String, passwUser: String){
     onClickAction(emailUser)
+}
+
+fun colorBotonLogin(estadoBoton: Boolean): Int{
+    return if(estadoBoton) R.color.colorPrimaryDarkPi else R.color.teal_200
 }
 
 

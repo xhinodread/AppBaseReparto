@@ -9,7 +9,6 @@ import kotlinx.coroutines.withContext
 import okhttp3.ResponseBody.Companion.asResponseBody
 import javax.inject.Inject
 import javax.inject.Singleton
-
 @Singleton
 class SeguimientoRepositoryImpl @Inject constructor(
     private val seguimientoService: SeguimientoService,

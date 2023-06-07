@@ -6,8 +6,10 @@ import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -206,6 +208,7 @@ fun Seguimiento(
                         horizontalAlignment = Alignment.Start
                     ) {
                         var estadoFinal = ""
+                        var textoFinal = ""
                         var myModifier : Modifier = Modifier
                             .fillMaxWidth()
                             .wrapContentSize(Alignment.Center)
@@ -221,6 +224,7 @@ fun Seguimiento(
                                     if (estadoEnvio.id.toInt() >= 4) {
                                         swFinal = 1
                                         estadoFinal = estadoEnvio.estado
+                                        textoFinal=estadoEnvio.fecha+'\n'+estadoEnvio.mensaje
                                     }
                                 }
                             }else{
@@ -229,7 +233,7 @@ fun Seguimiento(
                         }
                         Spacer(modifier = Modifier.height(50.dp))
                         if (swFinal == 1) {
-                            EncomiendaEntregada(estadoFinal)
+                            EncomiendaEntregada(estadoFinal, textoFinal)
                             swFinal = 0
                         }
                     }
@@ -284,13 +288,15 @@ fun FormaTracking(shape: Shape, texto:String, estadoTexto:String){
             modifier = Modifier
                 .size(75.dp)
                 .clip(shape)
+                .border(BorderStroke(2.dp, Color.Red))
                 .background(colorResource(id = colorShape))
                 .fillMaxWidth()
                 .wrapContentSize(Alignment.Center)
+                .padding(1.dp)
         ){
             Text(
                 text=texto,
-                fontSize = 12.sp,
+                fontSize = 11.sp,
                 color = colorTexto,
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.ExtraBold
@@ -305,9 +311,11 @@ fun FormaTracking(shape: Shape, texto:String, estadoTexto:String){
 }
 
 @Composable
-fun EncomiendaEntregada(estadoTexto:String){
+fun EncomiendaEntregada(estadoTexto:String ,textoFinal:String){
     val colorTexto = if(estadoTexto=="1")Color.White else Color.Gray
     val colorShape = if(estadoTexto=="1")R.color.rojo_pi else R.color.purple_pi
+    val tamanioShape = if(estadoTexto=="1")180.dp else 150.dp
+    val tamanioTexto = if(estadoTexto=="1")20.sp else 15.sp
 
     Column(
         modifier = Modifier
@@ -316,15 +324,17 @@ fun EncomiendaEntregada(estadoTexto:String){
     ) {
         Box(
             modifier = Modifier
-                .size(100.dp)
+                .size(tamanioShape)
+                .border(2.dp, Color.Red, CircleShape)
                 .clip(CircleShape)
                 .background(colorResource(id = colorShape))
                 .fillMaxWidth()
                 .wrapContentSize(Alignment.Center)
+                .padding(5.dp)
         ) {
             Text(
-                text = "Encomienda Entregada al cliente",
-                fontSize = 15.sp,
+                text = textoFinal,
+                fontSize = tamanioTexto,
                 color = colorTexto,
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.ExtraBold

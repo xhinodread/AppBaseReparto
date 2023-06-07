@@ -10,6 +10,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -47,7 +48,11 @@ class MainActivity : ComponentActivity() {
 fun MainScreen(
     loginViewModel: LoginViewModel = viewModel()
 ) {
-    var statusPantalla by remember { mutableStateOf(true) }
+    var statusPantalla2 by remember { mutableStateOf(true) }
+    val statusPantalla by loginViewModel.isLogin.observeAsState()
+    val msgSucces by loginViewModel.msgSucces.observeAsState()
+
+
     val navController = rememberNavController()
     val estadoDrawer = rememberScaffoldState(
         drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -55,7 +60,7 @@ fun MainScreen(
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
 
-     if(statusPantalla){
+     if(statusPantalla == true){
          Column(
              modifier = Modifier
                  .fillMaxSize()
@@ -63,8 +68,7 @@ fun MainScreen(
          ){
            // loginViewModel.statusApi()
              LoginScreen(
-                onClickAction = { statusPantalla = clickLogin(context, statusPantalla) }  ,
-                loginViewModel
+                onClickAction = { clickLogin(context, statusPantalla!!, msgSucces) }
              )
          }
      }else{
@@ -89,8 +93,9 @@ fun MainScreen(
 }
 
 
-fun clickLogin(context: Context? = null, statusPantalla: Boolean): Boolean {
-    Toast.makeText(context, "Success......", Toast.LENGTH_SHORT ).show()
+fun clickLogin(context: Context? = null, statusPantalla: Boolean, msgSucces:String?): Boolean {
+    if( msgSucces != "" )Toast.makeText(context, msgSucces, Toast.LENGTH_SHORT ).show()
+
     return !statusPantalla
 }
 
