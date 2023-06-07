@@ -16,6 +16,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.appbase.R
@@ -40,7 +41,7 @@ class MainActivity : ComponentActivity() {
                 MainScreen()
             }
         }
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED)
     }
 }
 
@@ -68,7 +69,7 @@ fun MainScreen(
          ){
            // loginViewModel.statusApi()
              LoginScreen(
-                onClickAction = { clickLogin(context, statusPantalla!!, msgSucces) }
+                onClickAction = { clickLogin(context, statusPantalla!!, msgSucces, loginViewModel) }
              )
          }
      }else{
@@ -93,9 +94,9 @@ fun MainScreen(
 }
 
 
-fun clickLogin(context: Context? = null, statusPantalla: Boolean, msgSucces:String?): Boolean {
+fun clickLogin(context: Context? = null, statusPantalla: Boolean, msgSucces:String?, loginViewModel: LoginViewModel): Boolean {
     if( msgSucces != "" )Toast.makeText(context, msgSucces, Toast.LENGTH_SHORT ).show()
-
+    loginViewModel.vaciarMsg()
     return !statusPantalla
 }
 

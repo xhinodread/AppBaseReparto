@@ -38,12 +38,21 @@ class LoginViewModel @Inject constructor(
     private val _msgSucces = MutableLiveData<String>("")
     val msgSucces: LiveData<String> = _msgSucces
 
+    private val _isEnabled = MutableLiveData(true)
+    val isEnabled : LiveData<Boolean> =_isEnabled
+
+
     fun statusConeccion(){
         viewModelScope.launch {
             val result = getEstadoApiUseCase()
             isConected.postValue(result)
         }
     }
+    fun setEnables() {
+        _isEnabled.value = isEnabled.value
+    }
+
+    fun vaciarMsg() = _msgSucces.postValue("")
 
     fun userUiState(elEmail:String, laPassw: String) {
         if(isValidEmail(elEmail) && isValidPass(laPassw) ){
@@ -58,6 +67,7 @@ class LoginViewModel @Inject constructor(
 
     private fun hacerLogin(elEmail:String, laPassw: String){
         viewModelScope.launch {
+            _isEnabled.value = false
             // val login = hacerLoginUseCase("chileregion", "abcde123")
             val login = hacerLoginUseCase(elEmail, laPassw)
             Log.d("onClick", "login:" + login)
@@ -75,6 +85,7 @@ class LoginViewModel @Inject constructor(
                 _isLogin.value = false
                 _tokenLogin.value = login
             }
+            _isEnabled.value = true
         }
     }
 

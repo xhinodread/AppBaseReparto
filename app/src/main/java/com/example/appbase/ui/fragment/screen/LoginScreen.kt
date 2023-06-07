@@ -62,11 +62,12 @@ fun LoginScreen(
     var estadoBoton by remember { mutableStateOf(true) }
 
     val coneccionStatus by coneccionViewModel.isConected.observeAsState()
+    val enableBoton by loginViewModel.isEnabled.observeAsState()
 
     val context = LocalContext.current
 
-    val connection by connectivityState()
-    val isConnected = connection === ConnectionState.Available
+    //val connection by connectivityState()
+   // val isConnected = connection === ConnectionState.Available
 
     LaunchedEffect(key1 = Unit) {
         coneccionViewModel.statusConeccion()
@@ -87,7 +88,6 @@ fun LoginScreen(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.BottomCenter
         ){
-
             ConstraintLayout {
                 val (surface, fab) = createRefs()
 
@@ -104,7 +104,7 @@ fun LoginScreen(
                         topEndPercent = 2
                     )
                 ){
-                    Column() {
+                    Column {
                         Text(
                             text="Bienvenido a Transportes Piero",
                             style = MaterialTheme.typography.h4.copy(fontWeight = FontWeight.Medium)
@@ -117,32 +117,59 @@ fun LoginScreen(
                         ImputStd(emailUser, {emailUser = it}, "Email usuario"  )
                         ImputStd(passwUser, {passwUser = it}, "Password"  )
                         Spacer(modifier = Modifier.height(20.dp))
-                        Button(
-                            enabled=estadoBoton,
-                            onClick = {
-                                estadoBoton=false
-                                coneccionViewModel.statusConeccion()
-                                if( coneccionStatus == true ){
-                                    Log.d("onClick", "B "+estadoBoton.toString())
-                                    if( emailUser.isNullOrEmpty() || passwUser.isNullOrEmpty() ){
-                                        Toast.makeText(context, "Campo vacio", Toast.LENGTH_SHORT).show()
-                                    }else{
-                                        loginViewModel.userUiState(emailUser, passwUser)
-                                        clickLogin(onClickAction, emailUser, passwUser)
+                     /***   if(enableBoton == false){
+                            Row(
+                                modifier = Modifier.fillMaxWidth().background(Color.Red),
+                                horizontalArrangement = Arrangement.Center
+                            ){
+                                CircularProgressIndicator(strokeWidth = 5.dp)
+                            }
+                        }else { ****/
+                            Button(
+                                enabled = enableBoton!!,
+                                onClick = {
+                                    estadoBoton = false
+                                    coneccionViewModel.statusConeccion()
+                                    if (coneccionStatus == true) {
+                                        Log.d("onClick", "B " + estadoBoton.toString())
+                                        if (emailUser.isNullOrEmpty() || passwUser.isNullOrEmpty()) {
+                                            Toast.makeText(
+                                                context,
+                                                "Campo vacio",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        } else {
+                                            loginViewModel.userUiState(emailUser, passwUser)
+                                            clickLogin(onClickAction, emailUser, passwUser)
+                                        }
                                     }
+                                    estadoBoton = true
+                                },
+                                //   colors = ButtonDefaults.buttonColors(backgroundColor= colorResource(id = R.color.colorPrimaryDarkPi)),
+                                colors = ButtonDefaults.buttonColors(
+                                    backgroundColor = colorResource(
+                                        id = colorBotonLogin(estadoBoton)
+                                    )
+                                ),
+                                modifier = Modifier
+                                    .padding(5.dp)
+                                    .fillMaxWidth()
+                                    .height(50.dp),
+                                shape = bordeBoton
+                            ) {
+                                if(enableBoton == false){
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.Center,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ){
+                                        CircularProgressIndicator(strokeWidth = 5.dp)
+                                    }
+                                }else{
+                                    Text(text = "Login", color = Color.White)
                                 }
-                                estadoBoton=true
-                            },
-                         //   colors = ButtonDefaults.buttonColors(backgroundColor= colorResource(id = R.color.colorPrimaryDarkPi)),
-                            colors = ButtonDefaults.buttonColors(backgroundColor= colorResource(id = colorBotonLogin(estadoBoton))),
-                            modifier = Modifier
-                                .padding(5.dp)
-                                .fillMaxWidth()
-                                .height(50.dp),
-                            shape = bordeBoton
-                        ) {
-                            Text(text="Login", color= Color.White)
-                        }
+                            }
+                        //}
                         Spacer(modifier = Modifier.height(20.dp))
                         Row( modifier = Modifier
                             .background(Color.Transparent)
@@ -180,7 +207,9 @@ fun LoginScreen(
                                 painter = painterResource(id = R.drawable.capturahomepiero),
                                 contentDescription = stringResource(id = R.string.app_title),
                                 alignment = Alignment.Center,
-                                modifier = Modifier.fillMaxWidth().size(300.dp)
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .size(300.dp)
                             )
                         }
 
