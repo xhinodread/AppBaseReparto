@@ -6,11 +6,14 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.ActivityResultLauncher
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -21,6 +24,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.appbase.R
 import com.example.appbase.ui.fragment.screen.LoginScreen
+import com.example.appbase.ui.fragment.screen.PreviewViewComposable
 import com.example.appbase.ui.fragment.screen.clickLogin
 import com.example.appbase.ui.nav.BottomNavigationBar
 import com.example.appbase.ui.nav.DrawerMenu
@@ -29,11 +33,15 @@ import com.example.appbase.ui.nav.TopBar
 import com.example.appbase.ui.theme.AppBaseTheme
 import com.example.appbase.ui.theme.Cremita
 import com.example.appbase.ui.viewmodel.LoginViewModel
+import com.google.zxing.integration.android.IntentIntegrator
+import com.journeyapps.barcodescanner.ScanContract
+import com.journeyapps.barcodescanner.ScanOptions
 import dagger.hilt.android.AndroidEntryPoint
 
+@ExperimentalFoundationApi
+@androidx.camera.core.ExperimentalGetImage
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -43,8 +51,11 @@ class MainActivity : ComponentActivity() {
         }
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED)
     }
+
 }
 
+@ExperimentalFoundationApi
+@androidx.camera.core.ExperimentalGetImage
 @Composable
 fun MainScreen(
     loginViewModel: LoginViewModel = viewModel()
@@ -103,7 +114,7 @@ fun clickLogin(context: Context? = null, statusPantalla: Boolean, msgSucces:Stri
 @Preview(showBackground = true)
 @Composable
 fun MainScreenPreview() {
-    MainScreen()
+   // MainScreen()
 }
 
 /****

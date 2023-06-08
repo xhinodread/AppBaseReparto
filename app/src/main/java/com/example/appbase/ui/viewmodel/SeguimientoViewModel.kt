@@ -29,8 +29,20 @@ class SeguimientoViewModel @Inject constructor(
     private val _estadoDespacho = MutableLiveData<List<EstadoEnvio>>()
     val estadoDespacho: LiveData<List<EstadoEnvio>> = _estadoDespacho
 
+    private val _nroFolio = MutableLiveData<String>("")
+    val nroFolio : LiveData<String> =_nroFolio
+
     fun limpiarLista(){
         _estadoDespacho.value = emptyList()
+    }
+
+    fun addNrofolio(nro_folio: String){
+        Log.d("onClick", "ViewModel: " + nro_folio )
+
+        if(!nro_folio.isNullOrBlank() || nro_folio != null ){
+            _nroFolio.value = nro_folio
+        }
+
     }
 
     fun getStadoDespacho(nro_folio:String){

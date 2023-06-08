@@ -64,6 +64,7 @@ fun Seguimiento(
     val focusManager = LocalFocusManager.current
     val listaEstadoDespacho by seguimientoViewModel.estadoDespacho.observeAsState()
     val cargandoDespacho by seguimientoViewModel.cargando.observeAsState()
+    val nroFolioViewModel by seguimientoViewModel.nroFolio.observeAsState()
     var swFinal = 0
     var textoMsg =""
     var textobusqueda =""
@@ -76,6 +77,13 @@ fun Seguimiento(
         coneccionViewModel.statusConeccion()
     }
     *****/
+
+
+    Log.d("onClick", "nroFolioViewModel: " + nroFolioViewModel.toString() )
+    if( nroFolioViewModel != "" || nroFolioViewModel.isNullOrBlank() ){
+        texto = nroFolioViewModel.toString()
+    }
+
 
     Column(
         modifier = Modifier
