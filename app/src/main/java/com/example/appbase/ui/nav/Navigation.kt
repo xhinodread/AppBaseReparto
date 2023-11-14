@@ -1,5 +1,6 @@
 package com.example.appbase.ui.nav
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -11,6 +12,8 @@ import com.example.appbase.ui.viewmodel.LoginViewModel
 import com.example.appbase.ui.viewmodel.SeguimientoViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 
+@ExperimentalFoundationApi
+@androidx.camera.core.ExperimentalGetImage
 @Composable
 fun Navigation(navController: NavHostController, loginViewModel: LoginViewModel) {
     //val seguimientoViewModel= SeguimientoViewModel()

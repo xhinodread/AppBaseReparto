@@ -76,8 +76,9 @@ fun HomeScreen(
             .background(colorResource(id = R.color.white)),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+//        text = "Usuario: ${nombreDelUsuario}, ${loginUiState?.rutUser} ",
         Text(
-            text = "Usuario: ${nombreDelUsuario}, ${loginUiState?.rutUser} ",
+            text = "Usuario: ${nombreDelUsuario} ",
             fontWeight = FontWeight.Bold,
             color = Color.Black,
             modifier = Modifier

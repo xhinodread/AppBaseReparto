@@ -5,8 +5,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.GenericShape
+import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -14,15 +20,31 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.appbase.R
+import com.example.appbase.ui.fragment.alert.SimpleAlertDialog
+import com.example.appbase.ui.fragment.alert.SimpleAlertDialog2
 import com.example.appbase.ui.theme.Laranja
 import com.example.appbase.ui.theme.Purple200
 import com.example.appbase.ui.theme.Purple220
+import com.example.appbase.ui.viewmodel.ConeccionViewModel
+import com.example.appbase.ui.viewmodel.DialogViewModel
+
 
 @Composable
-fun AppAbout(){
-    Column() {
+fun AppAbout(
+    dialogViewModel: DialogViewModel = hiltViewModel(),
+    ){
 
+    val showDialogState: Boolean by dialogViewModel.showDialog.collectAsState()
+
+
+    Column() {
+        SimpleAlertDialog2(
+            show = showDialogState,
+            onDismiss = { dialogViewModel.onDialogDismiss() },
+            onConfirm = dialogViewModel::onDialogConfirm,
+        )
         Box(
             modifier = Modifier
                 .background(Purple200)
@@ -62,10 +84,17 @@ fun AppAbout(){
         }
 
         Row() {
+            Button(onClick = {
+                dialogViewModel.onOpenDialogClicked()
+            }) {
+                Text("Click me Dialog")
+            }
             ExampleBox(shape = OtraShape)
         }
     }
+
 }
+
 
 @Composable
 fun CutCornerShapeDemo(){

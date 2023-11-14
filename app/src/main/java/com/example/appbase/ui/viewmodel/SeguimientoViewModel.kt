@@ -11,6 +11,7 @@ import kotlinx.coroutines.launch
 import android.util.Log
 import com.example.appbase.domain.repository.SeguimientoRepository
 import com.example.appbase.domain.usecase.GetEstadoApiUseCase
+import com.example.appbase.domain.usecase.GetSeguimientoUseCase
 import com.example.appbase.ui.common.listadoHistoria
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.*
@@ -18,8 +19,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SeguimientoViewModel @Inject constructor(
-    private val seguimientoRepository : SeguimientoRepository,
     private val getEstadoApiUseCase: GetEstadoApiUseCase,
+    private val getSeguimientoUseCase: GetSeguimientoUseCase,
 ): ViewModel() {
 
     private val _cargando = MutableLiveData<Boolean>(false)
@@ -28,8 +29,20 @@ class SeguimientoViewModel @Inject constructor(
     private val _estadoDespacho = MutableLiveData<List<EstadoEnvio>>()
     val estadoDespacho: LiveData<List<EstadoEnvio>> = _estadoDespacho
 
+    private val _nroFolio = MutableLiveData<String>("")
+    val nroFolio : LiveData<String> =_nroFolio
+
     fun limpiarLista(){
         _estadoDespacho.value = emptyList()
+    }
+
+    fun addNrofolio(nro_folio: String){
+        Log.d("onClick", "ViewModel: " + nro_folio )
+
+        if(!nro_folio.isNullOrBlank() || nro_folio != null ){
+            _nroFolio.value = nro_folio
+        }
+
     }
 
     fun getStadoDespacho(nro_folio:String){
@@ -37,8 +50,9 @@ class SeguimientoViewModel @Inject constructor(
          viewModelScope.launch {
              val resultStatusRed = getEstadoApiUseCase()
              if(resultStatusRed){
-                 val getRecorridoDespacho = seguimientoRepository.getEstadoCarga(nro_folio)
-                 val resp = getRecorridoDespacho?.resp
+               //  val getRecorridoDespacho = seguimientoRepository.getEstadoCarga(nro_folio)
+                 val getRecorridoDespacho = getSeguimientoUseCase(nro_folio)
+                 val resp = getRecorridoDespacho.resp
                  //Log.d("onList", "api: \n" + getRecorridoDespacho.resp.recorrido )
                  if(resp?.toString().isNullOrBlank() == false ){
                      val elRecorrido = resp?.recorrido?.map { valor ->
@@ -88,31 +102,7 @@ class SeguimientoViewModel @Inject constructor(
 
 
 /***************************************/
-/***
-fun listadoHistoria_(): List<EstadoEnvio> {
-    //val fechas = listOf("Ayer", "Hoy", "Recien", "Ahora", "Encomienda")
-    val fechas = listOf("22/05/2023", "23/05/2023", "24/05/2023", "24/05/2023", "24/05/2023")
-    val etiquetas = listOf("En Sucursal", "En Ruta", "En Destino", "En Reparto", "Encomienda Entregada al cliente")
-    var elEstado = "1"
-    var sw = 0
-    val miLista = fechas.mapIndexed { ind, valor ->
-        elEstado = estadoHistoria(elEstado.toInt(), sw)
-        sw = 1
-        //EstadoEnvio(ind.toString(), valor, etiquetas[ind]+'\n' +elEstado, elEstado)
-        EstadoEnvio(ind.toString(), valor, etiquetas[ind], elEstado)
-    }
-    return miLista
-}
 
-fun estadoHistoria_(valorInicial:Int, sw:Int): String{
-    //Log.d("onList","valorInicial"+ '\n'+  valorInicial )
-    var resutladoEstado = valorInicial.toString()
-    if(sw == 1) {
-        if (valorInicial == 1) resutladoEstado = listaRand(1).toString()
-    }
-    return resutladoEstado
-}
-****/
 data class EstadoDespacho(
     val id: String = "",
     val fecha:String = "",

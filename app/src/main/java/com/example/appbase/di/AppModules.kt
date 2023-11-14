@@ -2,7 +2,9 @@ package com.example.appbase.di
 
 import android.util.Log
 import com.example.appbase.core.ResultCallAdapterFactory
+import com.example.appbase.domain.repository.LoginRepository
 import com.example.appbase.domain.repository.SeguimientoRepository
+import com.example.appbase.network.repository.LoginRepositoryImpl
 import com.example.appbase.network.repository.SeguimientoRepositoryImpl
 import com.example.appbase.network.service.SeguimientoService
 import com.example.appbase.utils.Const.KEY_API
@@ -25,6 +27,8 @@ import javax.net.ssl.HostnameVerifier
 import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManager
 import javax.net.ssl.X509TrustManager
+import okio.Buffer
+import javax.inject.Singleton
 
 
 @Module
@@ -43,17 +47,18 @@ class AppModules {
     @Named("KEY_API2")
     fun provideKeyAPI2(): String = KEY_API2
 
+    @Singleton
     @Provides
     @Named("PAGE_SIZE")
     fun providePageSize(): Int = PAGE_SIZE
-
+    @Singleton
     @Provides
     fun provideRetrofit(
         @Named("WEB_API") webAPI: String,
     ): Retrofit {
         val client = OkHttpClient
-            .Builder()
-            .addInterceptor(
+           .Builder()
+           .addInterceptor(
                 HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
             )
             .ignoreAllSSLErrors()
@@ -66,13 +71,12 @@ class AppModules {
             .client(client)
             .build()
     }
-
-
+    @Singleton
     @Provides
     fun provideSeguimientoService(
         retrofit: Retrofit
     ): SeguimientoService = retrofit.create(SeguimientoService::class.java)
-
+    @Singleton
     @Provides
     fun provideSeguimientoRepository(
         seguimiento: SeguimientoService,
@@ -82,6 +86,15 @@ class AppModules {
         seguimientoService = seguimiento,
         apiKey2 = keyApi2
     )
+
+    @Singleton
+    @Provides
+    fun provideLoginRepository(
+        seguimiento: SeguimientoService,
+        @Named("KEY_API2") keyApi2: String,
+    ): LoginRepository = LoginRepositoryImpl(
+                            seguimientoService = seguimiento,
+                        )
 
     fun OkHttpClient.Builder.ignoreAllSSLErrors(): OkHttpClient.Builder {
         val naiveTrustManager = object : X509TrustManager {
@@ -105,3 +118,28 @@ class AppModules {
     }
 
 }
+
+/****
+class MyInterceptor: Interceptor {
+
+    override fun intercept(chain: Interceptor.Chain): Response {
+        return chain.proceed(
+            chain.request().newBuilder()
+                .addContentTypeHeader()
+                .addUserAgentHeader()
+                .addBunqHeaders(chain.request())
+                .build()
+        )
+    }
+
+    private fun Request.Builder.addSignatureHeader(request: Request) =
+        header("X-Client-Signature", signer.sign(request.getBodyAsString()))
+
+    private fun Request.getBodyAsString(): String {
+        val requestCopy = this.newBuilder().build()
+        val buffer = Buffer()
+        requestCopy.body?.writeTo(buffer)
+        return buffer.readUtf8()
+    }
+}
+        *****/

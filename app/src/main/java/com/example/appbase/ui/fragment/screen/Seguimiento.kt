@@ -6,8 +6,10 @@ import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -25,6 +27,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -62,6 +65,7 @@ fun Seguimiento(
     val focusManager = LocalFocusManager.current
     val listaEstadoDespacho by seguimientoViewModel.estadoDespacho.observeAsState()
     val cargandoDespacho by seguimientoViewModel.cargando.observeAsState()
+    val nroFolioViewModel by seguimientoViewModel.nroFolio.observeAsState()
     var swFinal = 0
     var textoMsg =""
     var textobusqueda =""
@@ -74,6 +78,13 @@ fun Seguimiento(
         coneccionViewModel.statusConeccion()
     }
     *****/
+
+
+    Log.d("onClick", "nroFolioViewModel: " + nroFolioViewModel.toString() )
+    if( nroFolioViewModel != "" || nroFolioViewModel.isNullOrBlank() ){
+        texto = nroFolioViewModel.toString()
+    }
+
 
     Column(
         modifier = Modifier
@@ -206,6 +217,7 @@ fun Seguimiento(
                         horizontalAlignment = Alignment.Start
                     ) {
                         var estadoFinal = ""
+                        var textoFinal = ""
                         var myModifier : Modifier = Modifier
                             .fillMaxWidth()
                             .wrapContentSize(Alignment.Center)
@@ -216,11 +228,17 @@ fun Seguimiento(
                         ) {
                             if (listaEstadoDespacho?.isNotEmpty() == true) {
                                 listaEstadoDespacho?.mapIndexed { ind, estadoEnvio ->
-                                    textoMsg = estadoEnvio.fecha+'\n'+estadoEnvio.mensaje
-                                    if (estadoEnvio.id.toInt() < 4) FormaTracking(shape = CircleShape, textoMsg, estadoEnvio.estado)
+                                    //textoMsg = estadoEnvio.fecha+'\n'+estadoEnvio.mensaje
+                                    textoMsg = estadoEnvio.fecha
+                                    if (estadoEnvio.id.toInt() < 4) FormaTracking(shape = CircleShape, textoMsg, estadoEnvio.estado, ind)
                                     if (estadoEnvio.id.toInt() >= 4) {
                                         swFinal = 1
                                         estadoFinal = estadoEnvio.estado
+                                        if(estadoFinal=="1"){
+                                            textoFinal=estadoEnvio.fecha
+                                        }else{
+                                            textoFinal=estadoEnvio.fecha+'\n'+estadoEnvio.mensaje
+                                        }
                                     }
                                 }
                             }else{
@@ -229,7 +247,7 @@ fun Seguimiento(
                         }
                         Spacer(modifier = Modifier.height(50.dp))
                         if (swFinal == 1) {
-                            EncomiendaEntregada(estadoFinal)
+                            EncomiendaEntregada(estadoFinal, textoFinal)
                             swFinal = 0
                         }
                     }
@@ -274,40 +292,82 @@ private fun hacerClick(texto: String, seguimientoViewModel: SeguimientoViewModel
 
 
 @Composable
-fun FormaTracking(shape: Shape, texto:String, estadoTexto:String){
+fun FormaTracking(shape: Shape, texto:String, estadoTexto:String, ind: Int){
     val colorTexto = if(estadoTexto=="1")Color.White else Color.Gray
-    val colorShape = if(estadoTexto=="1")R.color.rojo_pi else R.color.purple_pi
+    //val colorShape =  if(estadoTexto=="1")R.color.rojo_pi else R.color.purple_pi // R.color.white //
+    val colorShape =  if(estadoTexto=="1")R.color.white else R.color.purple_pi //
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
             modifier = Modifier
-                .size(75.dp)
+               // .size(80dp)
                 .clip(shape)
+                .height(170.dp)
+                .width(80.dp)
+                //.fillMaxWidth()
+                // .border(BorderStroke(2.dp, Color.Red))
                 .background(colorResource(id = colorShape))
-                .fillMaxWidth()
                 .wrapContentSize(Alignment.Center)
+                .padding(1.dp),
+            contentAlignment = Alignment.TopCenter
         ){
+            /****
             Text(
                 text=texto,
-                fontSize = 12.sp,
+                fontSize = 11.sp,
                 color = colorTexto,
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.ExtraBold
             )
+            *****/
+
+         //  Column() {
+            Text(
+                texto,
+                fontSize = 14.sp,
+                modifier = Modifier.padding(bottom =10.dp)
+            )
+            Image(
+                painterResource(
+                    id = entregaImagenEntrega(estadoTexto, ind),
+                ),
+                contentDescription = texto,
+                contentScale = ContentScale.Fit,
+                modifier = Modifier.padding(top=20.dp)
+            )
+        //   }
+
         }
         if(estadoTexto=="1"){
-            Text("-->", color=Color.Yellow)
+            Text("->", color=Color.Yellow)
         }else{
             Spacer(modifier = Modifier.width(25.dp))
         }
     }
 }
 
+fun entregaImagenEntrega(estadoTexto:String, ind:Int): Int{
+    Log.d("click", estadoTexto)
+    //Log.d("click", ind.toString())
+    val imagn = arrayOf(
+        R.drawable.mercaderia_orden_dreada,
+        R.drawable.mercaderia_creada,
+        R.drawable.mercaderia_en_destino,
+        R.drawable.mercaderia_en_reparto,
+        R.drawable.mercaderia_entregada
+    )
+    //Log.d("click", "-> " + imagn[ind].toString())
+    //return R.drawable.mercaderia_orden_dreada
+    return imagn[ind]
+}
+
 @Composable
-fun EncomiendaEntregada(estadoTexto:String){
+fun EncomiendaEntregada(estadoTexto:String ,textoFinal:String){
     val colorTexto = if(estadoTexto=="1")Color.White else Color.Gray
     val colorShape = if(estadoTexto=="1")R.color.rojo_pi else R.color.purple_pi
+    val tamanioShape = if(estadoTexto=="1")260.dp else 170.dp
+    val tamanioTexto = if(estadoTexto=="1")20.sp else 15.sp
 
     Column(
         modifier = Modifier
@@ -316,19 +376,49 @@ fun EncomiendaEntregada(estadoTexto:String){
     ) {
         Box(
             modifier = Modifier
-                .size(100.dp)
+                .size(tamanioShape)
+                .border(2.dp, Color.Red, CircleShape)
                 .clip(CircleShape)
                 .background(colorResource(id = colorShape))
                 .fillMaxWidth()
                 .wrapContentSize(Alignment.Center)
+                .padding(5.dp),
+            contentAlignment = Alignment.Center
         ) {
+            /****
             Text(
-                text = "Encomienda Entregada al cliente",
-                fontSize = 15.sp,
+                text = textoFinal,
+                fontSize = tamanioTexto,
                 color = colorTexto,
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.ExtraBold
             )
+            *****/
+
+            if(estadoTexto=="1") {
+                Text(
+                    textoFinal,
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(top =60.dp),
+                    color = Color.White,
+                    textAlign = TextAlign.Center
+                )
+                Image(
+                    painterResource(
+                        id = entregaImagenEntrega(estadoTexto, 4),
+                    ),
+                    contentDescription = textoFinal,
+                    contentScale = ContentScale.Fit
+                )
+            }else{
+                Text(
+                    textoFinal,
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(bottom =10.dp),
+                    color = Color.White,
+                    textAlign = TextAlign.Center
+                )
+            }
         }
     }
 }
